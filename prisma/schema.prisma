@@ -1,0 +1,243 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+model test_db {
+  id Int @unique @default(autoincrement())
+}
+
+model User {
+  id                String        @id @default(uuid())
+  email             String        @unique
+  password          String
+  firstName         String
+  lastName          String
+  role              Role          @default(SALES_REP)
+  department        String?
+  isActive          Boolean       @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  assignedCustomers Customer[]
+  assignedDeals     Deal[]
+  interactions      Interaction[]
+  tasks             Task[]
+  notes             Note[]
+  activityLogs      ActivityLog[]
+
+  @@map("users")
+}
+
+model Customer {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  firstName      String
+  lastName       String
+  company        String?
+  jobTitle       String?
+  phone          String?
+  address        Json?
+  status         CustomerStatus @default(LEAD)
+  source         String?
+  score          Int            @default(0)
+  lifetimeValue  Decimal        @default(0)
+  assignedUserId String
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  assignedUser   User           @relation(fields: [assignedUserId], references: [id])
+  deals          Deal[]
+  interactions   Interaction[]
+  tasks          Task[]
+  notes          Note[]
+  customerTags   CustomerTag[]
+
+  @@map("customers")
+}
+
+model Deal {
+  id                String        @id @default(uuid())
+  title             String
+  description       String?
+  value             Decimal
+  currency          String        @default("USD")
+  stage             DealStage     @default(PROSPECTING)
+  probability       Int           @default(0) // 0-100
+  expectedCloseDate DateTime
+  actualCloseDate   DateTime?
+  customerId        String
+  assignedUserId    String
+  isActive          Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  customer          Customer      @relation(fields: [customerId], references: [id])
+  assignedUser      User          @relation(fields: [assignedUserId], references: [id])
+  interactions      Interaction[]
+  tasks             Task[]
+  notes             Note[]
+
+  @@map("deals")
+}
+
+model Interaction {
+  id          String               @id @default(uuid())
+  type        InteractionType
+  subject     String
+  content     String?
+  direction   InteractionDirection
+  customerId  String
+  userId      String
+  dealId      String?
+  scheduledAt DateTime?
+  completedAt DateTime?
+  createdAt   DateTime             @default(now())
+  customer    Customer             @relation(fields: [customerId], references: [id])
+  user        User                 @relation(fields: [userId], references: [id])
+  deal        Deal?                @relation(fields: [dealId], references: [id])
+
+  @@map("interactions")
+}
+
+model Task {
+  id             String       @id @default(uuid())
+  title          String
+  description    String?
+  type           TaskType     @default(FOLLOW_UP)
+  priority       TaskPriority @default(MEDIUM)
+  status         TaskStatus   @default(PENDING)
+  dueDate        DateTime
+  completedAt    DateTime?
+  customerId     String?
+  dealId         String?
+  assignedUserId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+  deal           Deal?        @relation(fields: [dealId], references: [id])
+  assignedUser   User         @relation(fields: [assignedUserId], references: [id])
+
+  @@map("tasks")
+}
+
+model Note {
+  id         String   @id @default(uuid())
+  title      String?
+  content    String
+  isPrivate  Boolean  @default(false)
+  customerId String
+  dealId     String?
+  authorId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  customer   Customer @relation(fields: [customerId], references: [id])
+  deal       Deal?    @relation(fields: [dealId], references: [id])
+  author     User     @relation(fields: [authorId], references: [id])
+
+  @@map("notes")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  action    String
+  entity    String
+  entityId  String
+  changes   Json?
+  userId    String
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}
+
+model Tag {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  color        String? // Optional color for UI
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  customerTags CustomerTag[]
+
+  @@map("tags")
+}
+
+model CustomerTag {
+  id         String   @id @default(uuid())
+  customerId String
+  tagId      String
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, tagId])
+  @@map("customer_tags")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  SALES_MANAGER
+  SALES_REP
+  SUPPORT
+  MARKETING
+}
+
+enum CustomerStatus {
+  LEAD
+  PROSPECT
+  CUSTOMER
+  INACTIVE
+}
+
+enum DealStage {
+  PROSPECTING
+  QUALIFICATION
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum InteractionType {
+  EMAIL
+  CALL
+  MEETING
+  SMS
+  SOCIAL
+  WEBSITE
+}
+
+enum InteractionDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum TaskType {
+  FOLLOW_UP
+  DEMO
+  PROPOSAL
+  CONTRACT
+  SUPPORT
+  MEETING
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
