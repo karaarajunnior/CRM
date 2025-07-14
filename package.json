@@ -12,7 +12,15 @@
 		"start:prod": "tsc -p . && NODE_ENV=prod node dist/index.js"
 	},
 	"dependencies": {
+		"bcrypt": "^6.0.0",
+		"dayjs": "^1.11.13",
+		"fast-csv": "^5.0.2",
+		"jsonwebtoken": "^9.0.2",
 		"morgan": "^1.10.0",
+		"multer": "^2.0.1",
+		"node-cron": "^4.2.1",
+		"pdfkit": "^0.17.1",
+		"redis": "^5.6.0",
 		"typescript": "^5.8.3"
 	},
 	"devDependencies": {
@@ -36,6 +44,7 @@
 		"helmet": "^8.1.0",
 		"joi": "^17.13.3",
 		"prisma": "^6.11.1",
+		"resend": "^4.6.0",
 		"ts-node": "^10.9.2",
 		"xlsx": "^0.18.5"
 	}

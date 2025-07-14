@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -34,6 +33,18 @@ model User {
   @@map("users")
 }
 
+model Contact {
+  id            String       @id @default(uuid())
+  customerId    String
+  taskId        String
+  type          String
+  value         String
+  customer      Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  task          Task         @relation(fields: [taskId], references: [id])
+  Interaction   Interaction? @relation(fields: [interactionId], references: [id])
+  interactionId String?
+}
+
 model Customer {
   id             String         @id @default(uuid())
   email          String         @unique
@@ -42,7 +53,10 @@ model Customer {
   company        String?
   jobTitle       String?
   phone          String?
+  contacts       Contact[]
   address        Json?
+  customFields   Json?
+  documents      Json?
   status         CustomerStatus @default(LEAD)
   source         String?
   score          Int            @default(0)
@@ -68,7 +82,7 @@ model Deal {
   value             Decimal
   currency          String        @default("USD")
   stage             DealStage     @default(PROSPECTING)
-  probability       Int           @default(0) // 0-100
+  probability       Int           @default(0)
   expectedCloseDate DateTime
   actualCloseDate   DateTime?
   customerId        String
@@ -93,13 +107,17 @@ model Interaction {
   direction   InteractionDirection
   customerId  String
   userId      String
+  completed   Boolean              @default(false)
   dealId      String?
+  contact     Contact[]
+  notes       Note                 @relation(fields: [noteId], references: [id])
   scheduledAt DateTime?
   completedAt DateTime?
   createdAt   DateTime             @default(now())
   customer    Customer             @relation(fields: [customerId], references: [id])
   user        User                 @relation(fields: [userId], references: [id])
   deal        Deal?                @relation(fields: [dealId], references: [id])
+  noteId      String
 
   @@map("interactions")
 }
@@ -111,6 +129,7 @@ model Task {
   type           TaskType     @default(FOLLOW_UP)
   priority       TaskPriority @default(MEDIUM)
   status         TaskStatus   @default(PENDING)
+  contactId      String
   dueDate        DateTime
   completedAt    DateTime?
   customerId     String?
@@ -121,23 +140,28 @@ model Task {
   customer       Customer?    @relation(fields: [customerId], references: [id])
   deal           Deal?        @relation(fields: [dealId], references: [id])
   assignedUser   User         @relation(fields: [assignedUserId], references: [id])
+  contact        Contact[]
+  note           Note[]
 
   @@map("tasks")
 }
 
 model Note {
-  id         String   @id @default(uuid())
-  title      String?
-  content    String
-  isPrivate  Boolean  @default(false)
-  customerId String
-  dealId     String?
-  authorId   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  customer   Customer @relation(fields: [customerId], references: [id])
-  deal       Deal?    @relation(fields: [dealId], references: [id])
-  author     User     @relation(fields: [authorId], references: [id])
+  id          String        @id @default(uuid())
+  title       String?
+  content     String
+  isPrivate   Boolean       @default(false)
+  customerId  String
+  dealId      String?
+  authorId    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  deal        Deal?         @relation(fields: [dealId], references: [id])
+  author      User          @relation(fields: [authorId], references: [id])
+  Task        Task?         @relation(fields: [taskId], references: [id])
+  taskId      String?
+  Interaction Interaction[]
 
   @@map("notes")
 }
@@ -160,7 +184,7 @@ model ActivityLog {
 model Tag {
   id           String        @id @default(uuid())
   name         String        @unique
-  color        String? // Optional color for UI
+  color        String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   customerTags CustomerTag[]
