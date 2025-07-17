@@ -9,16 +9,16 @@ export class ActivityLogController {
 		try {
 			const logs = await prisma.activityLog.findMany({
 				orderBy: { createdAt: "desc" },
-				include: {
-					user: {
-						select: {
-							id: true,
-							firstName: true,
-							lastName: true,
-							email: true,
-						},
-					},
-				},
+				// include: {
+				// 	user: {
+				// 		select: {
+				// 			id: true,
+				// 			firstName: true,
+				// 			lastName: true,
+				// 			email: true,
+				// 		},
+				// 	},
+				// },
 			});
 			res.status(200).json(logs);
 		} catch (error) {
@@ -51,16 +51,16 @@ export class ActivityLogController {
 		try {
 			const log = await prisma.activityLog.findUnique({
 				where: { id },
-				include: {
-					user: {
-						select: {
-							id: true,
-							firstName: true,
-							lastName: true,
-							email: true,
-						},
-					},
-				},
+				// include: {
+				// 	user: {
+				// 		select: {
+				// 			id: true,
+				// 			firstName: true,
+				// 			lastName: true,
+				// 			email: true,
+				// 		},
+				// 	},
+				// },
 			});
 
 			if (!log) {

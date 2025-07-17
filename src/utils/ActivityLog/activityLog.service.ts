@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export class ActivityLogService {
-	static async log(data: ActivityLogData): Promise<void> {
+	static async log(data): Promise<void> {
 		try {
 			await prisma.activityLog.create({
 				data: {

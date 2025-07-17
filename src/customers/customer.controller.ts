@@ -7,11 +7,9 @@ import { createClient } from "redis";
 import {
 	ApiResponse,
 	ContactMethodInput,
-	Customer,
 	CustomerSegmentCriteria,
 	CustomerStats,
 	CustomerUpdateInput,
-	PaginatedResult,
 } from "../customers/types";
 import { CustomField } from "../customers/types";
 
@@ -263,6 +261,10 @@ export class CustomerController {
 		try {
 			const { id } = req.params;
 			const file = req.file;
+
+			if (!req.user) {
+				return res.status(401).json({ error: "User not authenticated" });
+			}
 
 			if (!file) {
 				throw createError("No file uploaded", 400);

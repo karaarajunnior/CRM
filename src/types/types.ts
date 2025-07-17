@@ -112,7 +112,7 @@ export interface ActivityLogData {
 	action: string;
 	entity: string;
 	entityId: string;
-	changes?: any;
+	changes: any;
 	userId: string;
 	ipAddress?: string;
 	userAgent?: string;

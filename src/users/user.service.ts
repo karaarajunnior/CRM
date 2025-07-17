@@ -17,6 +17,7 @@ import {
 	RegisterInput,
 	SendEmailInput,
 } from "./types";
+import { logActivityMiddleware } from "../middlewares/LogActivityMiddleware";
 
 dotenv.config();
 const resend = new Resend(process.env.CRM_RESEND_KEY);
@@ -56,6 +57,14 @@ export class AuthService {
 			process.env.REFRESH_TOKEN!,
 			{ expiresIn: "7d" },
 		);
+		await prisma.user.update({
+			where: {
+				email,
+			},
+			data: {
+				lastLoginAt: new Date().toISOString(),
+			},
+		});
 
 		return { user, token, refreshToken: refresh };
 	}

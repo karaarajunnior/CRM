@@ -20,7 +20,7 @@ model User {
   role              Role          @default(SALES_REP)
   department        String?
   isActive          Boolean       @default(true)
-  lastLoginAt       DateTime?
+  lastLoginAt       String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   assignedCustomers Customer[]
@@ -28,7 +28,6 @@ model User {
   interactions      Interaction[]
   tasks             Task[]
   notes             Note[]
-  activityLogs      ActivityLog[]
 
   @@map("users")
 }
@@ -177,15 +176,14 @@ model Note {
 
 model ActivityLog {
   id        String   @id @default(uuid())
-  action    String
-  entity    String
-  entityId  String
+  action    String?
+  entity    String?
+  entityId  String?
   changes   Json?
-  userId    String
+  userId    String?
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
 
   @@map("activity_logs")
 }

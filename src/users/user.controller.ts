@@ -14,7 +14,7 @@ import { registerSchema } from "../validations/validations";
 const authService = new AuthService();
 
 export const login = async (
-	req: Partial<AuthenticatedRequest> | Request<{}, {}, LoginInput>,
+	req: Request<{}, {}, LoginInput>,
 	res: Response,
 ) => {
 	try {
@@ -193,9 +193,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	res.clearCookie("token").json({ message: "Logout successful" });
-	//alternatively
-	/*res
+	res
 		.cookie("token", " ", { maxAge: 1 })
 		.json({ message: "Logout successful" });
-	*/
 };
