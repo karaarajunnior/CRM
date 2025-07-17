@@ -1,4 +1,4 @@
-import { App } from "./app";
+import { App } from "./app.ts";
 
 const start = () => {
 	const app = new App();

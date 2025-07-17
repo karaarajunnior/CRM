@@ -1,4 +1,4 @@
-import { PaginationResult } from "./utils";
+import { PaginationResult } from "../types/types";
 
 export const createPaginationResult = <T>(
 	data: T[],

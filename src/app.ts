@@ -2,14 +2,18 @@ import express, { Application } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
-import userRoutes from "../src/routes/users.routes";
-import customerroutes from "../src/routes/customer.routes";
-import protectedRoutes from "./routes/protected.routes";
-import noteRoutes from "./routes/notes.routes";
-import taskRoutes from "./routes/task.routes";
-import interactionRoutes from "./routes/interaction.routes";
-
-//import AccessLogStream from "./routeDoc";
+import userRoutes from "../src/users/users.routes";
+import customerroutes from "./customers/customer.routes";
+import protectedRoutes from "./protectedRoutes/protected.routes";
+import noteRoutes from "./note/notes.routes";
+import taskRoutes from "./task/task.routes";
+import interactionRoutes from "./interaction/interaction.routes";
+import dealRoutes from "./Deal/deal.routes";
+import contactRoutes from "./contact/contact.routes";
+import customerTagRoutes from "./customers/customerTag.routes";
+import TagRoutes from "./tag/tag.routes";
+import ActivityLogRoutes from "./utils/ActivityLog/activityLog.routes";
+//import { accessLogStream } from "./logstream";
 
 dotenv.config();
 
@@ -39,6 +43,11 @@ export class App {
 		this.app.use("/api/note", noteRoutes);
 		this.app.use("/api/commn", interactionRoutes);
 		this.app.use("/api/tasks", taskRoutes);
+		this.app.use("/api/deals", dealRoutes);
+		this.app.use("/api/contacts", contactRoutes);
+		this.app.use("/api/customerTag", customerTagRoutes);
+		this.app.use("/api/Tag", TagRoutes);
+		this.app.use("/api/activityLog", ActivityLogRoutes);
 	}
 
 	private routes() {

@@ -39,9 +39,12 @@ model Contact {
   taskId        String
   type          String
   value         String
+  noteId        String
   customer      Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
   task          Task         @relation(fields: [taskId], references: [id])
   Interaction   Interaction? @relation(fields: [interactionId], references: [id])
+  note          Note         @relation(fields: [noteId], references: [id])
+  deal          Deal[]
   interactionId String?
 }
 
@@ -76,22 +79,25 @@ model Customer {
 }
 
 model Deal {
-  id                String        @id @default(uuid())
+  id                String          @id @default(uuid())
   title             String
   description       String?
+  type              InteractionType @default(EMAIL)
   value             Decimal
-  currency          String        @default("USD")
-  stage             DealStage     @default(PROSPECTING)
-  probability       Int           @default(0)
+  currency          String          @default("USD")
+  stage             DealStage       @default(PROSPECTING)
+  probability       Int             @default(0)
   expectedCloseDate DateTime
   actualCloseDate   DateTime?
   customerId        String
   assignedUserId    String
-  isActive          Boolean       @default(true)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  customer          Customer      @relation(fields: [customerId], references: [id])
-  assignedUser      User          @relation(fields: [assignedUserId], references: [id])
+  isActive          Boolean         @default(true)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  customer          Customer        @relation(fields: [customerId], references: [id])
+  assignedUser      User            @relation(fields: [assignedUserId], references: [id])
+  contact           Contact?        @relation(fields: [contactId], references: [id])
+  contactId         String
   interactions      Interaction[]
   tasks             Task[]
   notes             Note[]
@@ -109,11 +115,13 @@ model Interaction {
   userId      String
   completed   Boolean              @default(false)
   dealId      String?
+  contactId   String
   contact     Contact[]
   notes       Note                 @relation(fields: [noteId], references: [id])
   scheduledAt DateTime?
   completedAt DateTime?
   createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
   customer    Customer             @relation(fields: [customerId], references: [id])
   user        User                 @relation(fields: [userId], references: [id])
   deal        Deal?                @relation(fields: [dealId], references: [id])
@@ -154,6 +162,7 @@ model Note {
   customerId  String
   dealId      String?
   authorId    String
+  contact     Contact[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   customer    Customer      @relation(fields: [customerId], references: [id])
