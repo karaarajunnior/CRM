@@ -8,7 +8,7 @@ import {
 import { validate } from "../middlewares/validation";
 import { param } from "express-validator";
 import { upload } from "../middlewares/upload";
-import { authenticate } from "../middlewares/auth.middleware";
+import { authenticate, authorize } from "../middlewares/auth.middleware";
 
 const router = Router();
 
@@ -29,7 +29,6 @@ router.post(
 );
 router.post(
 	"/:id/documents",
-
 	upload.single("document"),
 	CustomerController.uploadDocument,
 );
