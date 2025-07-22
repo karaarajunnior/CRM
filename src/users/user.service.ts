@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import {
 	Resend,
 	CreateEmailOptions,
@@ -26,7 +26,7 @@ const prisma = new PrismaClient();
 export class AuthService {
 	/* Login service */
 	async loginUser(loginData: LoginInput): Promise<{
-		user: User;
+		user: any;
 		token: string;
 		refreshToken: string;
 	}> {
@@ -70,7 +70,7 @@ export class AuthService {
 	}
 
 	/* Register service */
-	async registerUser(registerData: RegisterInput): Promise<Partial<User>> {
+	async registerUser(registerData: RegisterInput): Promise<Partial<any>> {
 		const { email, password, firstName, lastName, roleId, department } =
 			registerData;
 
@@ -109,7 +109,7 @@ export class AuthService {
 	}
 
 	/* Remove user service */
-	async removeUser(userId: string, targetUserId: string): Promise<User> {
+	async removeUser(userId: string, targetUserId: string): Promise<any> {
 		if (userId !== targetUserId) {
 			throw new Error("You can only remove yourself");
 		}
@@ -227,7 +227,7 @@ export class AuthService {
 	}
 
 	/* Get profile service */
-	async getUserProfile(userId: string): Promise<User> {
+	async getUserProfile(userId: string): Promise<any> {
 		const user = await prisma.user.findUnique({ where: { id: userId } });
 		if (!user) {
 			throw new Error("User not found");
