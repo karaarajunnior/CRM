@@ -12,136 +12,29 @@ model test_db {
 }
 
 model User {
-  id        String @id @default(uuid())
-  email     String @unique
-  password  String
-  firstName String
-  lastName  String
-
+  id                String            @id @default(uuid())
+  email             String            @unique
+  password          String
+  firstName         String
+  lastName          String
   department        String?
   isActive          Boolean           @default(true)
   lastLoginAt       String?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+  roleId            Int?
+  ActivityLog       ActivityLog[]
+  approvalaction    approvalaction[]
+  approvalrequest   approvalrequest[]
   assignedCustomers Customer[]
   assignedDeals     Deal[]
   interactions      Interaction[]
-  tasks             Task[]
   notes             Note[]
-  ActivityLog       ActivityLog[]
-  approvalActions   ApprovalAction[]
-  createdRequests   ApprovalRequest[] @relation("CreatedRequests")
-  Role              Role?             @relation(fields: [roleId], references: [id])
-  roleId            Int?
+  tasks             Task[]
+  Role              role?             @relation(fields: [roleId], references: [id])
 
+  @@index([roleId], map: "users_roleId_fkey")
   @@map("users")
-}
-
-model Permission {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  rolePermissions RolePermission[]
-}
-
-model Role {
-  id                     Int                     @id @default(autoincrement())
-  name                   String                  @unique
-  description            String?
-  createdAt              DateTime                @default(now())
-  updatedAt              DateTime                @updatedAt
-  users                  User[]
-  rolePermissions        RolePermission[]
-  approvalConfigurations ApprovalConfiguration[]
-  ApprovalAction         ApprovalAction[]
-}
-
-model RolePermission {
-  id           Int        @id @default(autoincrement())
-  roleId       Int
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  permissionId Int
-
-  @@unique([roleId, permissionId])
-}
-
-model Entity {
-  id               Int                     @id @default(autoincrement())
-  name             String
-  description      String?
-  configurations   ApprovalConfiguration[]
-  approvalRequests ApprovalRequest[]
-}
-
-model ApprovalLevel {
-  id             Int                     @id @default(autoincrement())
-  name           String
-  description    String
-  configurations ApprovalConfiguration[]
-  actions        ApprovalAction[]
-}
-
-model ApprovalConfiguration {
-  id              Int    @id @default(autoincrement())
-  entityId        Int
-  roleId          Int
-  businessUnitId  Int
-  approvalLevelId Int
-  operation       String // CREATE, UPDATE, DELETE
-  approvalOrder   Int
-
-  entity        Entity        @relation(fields: [entityId], references: [id])
-  role          Role          @relation(fields: [roleId], references: [id])
-  approvalLevel ApprovalLevel @relation(fields: [approvalLevelId], references: [id])
-}
-
-model ApprovalRequest {
-  id               Int      @id @default(autoincrement())
-  entityId         Int
-  entityPrimaryKey Int // ID of actual entity record
-  operation        String
-  status           String // PENDING, APPROVED, REJECTED, RETURNED
-  createdById      String
-  createdAt        DateTime @default(now())
-
-  entity    Entity           @relation(fields: [entityId], references: [id])
-  createdBy User             @relation("CreatedRequests", fields: [createdById], references: [id])
-  actions   ApprovalAction[]
-}
-
-model ApprovalAction {
-  id                Int      @id @default(autoincrement())
-  approvalRequestId Int
-  userId            String
-  roleId            Int
-  levelId           Int
-  action            String // APPROVED, REJECTED, RETURNED
-  comment           String?
-  createdAt         DateTime @default(now())
-
-  approvalRequest ApprovalRequest @relation(fields: [approvalRequestId], references: [id])
-  user            User            @relation(fields: [userId], references: [id])
-  role            Role            @relation(fields: [roleId], references: [id])
-  level           ApprovalLevel   @relation(fields: [levelId], references: [id])
-}
-
-model Contact {
-  id            String       @id @default(uuid())
-  customerId    String
-  taskId        String
-  type          String
-  value         String
-  noteId        String
-  customer      Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  task          Task         @relation(fields: [taskId], references: [id])
-  Interaction   Interaction? @relation(fields: [interactionId], references: [id])
-  note          Note         @relation(fields: [noteId], references: [id])
-  deal          Deal[]
-  interactionId String?
 }
 
 model Customer {
@@ -152,25 +45,26 @@ model Customer {
   company        String?
   jobTitle       String?
   phone          String?
-  contacts       Contact[]
   address        Json?
-  customFields   Json?
-  documents      Json?
   status         CustomerStatus @default(LEAD)
   source         String?
   score          Int            @default(0)
-  lifetimeValue  Decimal        @default(0)
+  lifetimeValue  Decimal        @default(0.000000000000000000000000000000)
   assignedUserId String
   isActive       Boolean        @default(true)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  customFields   Json?
+  documents      Json?
+  contact        contact[]
+  customerTags   CustomerTag[]
   assignedUser   User           @relation(fields: [assignedUserId], references: [id])
   deals          Deal[]
   interactions   Interaction[]
-  tasks          Task[]
   notes          Note[]
-  customerTags   CustomerTag[]
+  tasks          Task[]
 
+  @@index([assignedUserId], map: "customers_assignedUserId_fkey")
   @@map("customers")
 }
 
@@ -178,7 +72,6 @@ model Deal {
   id                String          @id @default(uuid())
   title             String
   description       String?
-  type              InteractionType @default(EMAIL)
   value             Decimal
   currency          String          @default("USD")
   stage             DealStage       @default(PROSPECTING)
@@ -190,14 +83,18 @@ model Deal {
   isActive          Boolean         @default(true)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-  customer          Customer        @relation(fields: [customerId], references: [id])
-  assignedUser      User            @relation(fields: [assignedUserId], references: [id])
-  contact           Contact?        @relation(fields: [contactId], references: [id])
   contactId         String
+  type              InteractionType @default(EMAIL)
+  assignedUser      User            @relation(fields: [assignedUserId], references: [id])
+  contact           contact         @relation(fields: [contactId], references: [id])
+  customer          Customer        @relation(fields: [customerId], references: [id])
   interactions      Interaction[]
-  tasks             Task[]
   notes             Note[]
+  tasks             Task[]
 
+  @@index([assignedUserId], map: "deals_assignedUserId_fkey")
+  @@index([contactId], map: "deals_contactId_fkey")
+  @@index([customerId], map: "deals_customerId_fkey")
   @@map("deals")
 }
 
@@ -209,20 +106,24 @@ model Interaction {
   direction   InteractionDirection
   customerId  String
   userId      String
-  completed   Boolean              @default(false)
   dealId      String?
-  contactId   String
-  contact     Contact[]
-  notes       Note                 @relation(fields: [noteId], references: [id])
   scheduledAt DateTime?
   completedAt DateTime?
   createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  customer    Customer             @relation(fields: [customerId], references: [id])
-  user        User                 @relation(fields: [userId], references: [id])
-  deal        Deal?                @relation(fields: [dealId], references: [id])
+  completed   Boolean              @default(false)
   noteId      String
+  contactId   String
+  updatedAt   DateTime             @updatedAt
+  contact     contact[]
+  customer    Customer             @relation(fields: [customerId], references: [id])
+  deal        Deal?                @relation(fields: [dealId], references: [id])
+  notes       Note                 @relation(fields: [noteId], references: [id])
+  user        User                 @relation(fields: [userId], references: [id])
 
+  @@index([customerId], map: "interactions_customerId_fkey")
+  @@index([dealId], map: "interactions_dealId_fkey")
+  @@index([noteId], map: "interactions_noteId_fkey")
+  @@index([userId], map: "interactions_userId_fkey")
   @@map("interactions")
 }
 
@@ -233,7 +134,6 @@ model Task {
   type           TaskType     @default(FOLLOW_UP)
   priority       TaskPriority @default(MEDIUM)
   status         TaskStatus   @default(PENDING)
-  contactId      String
   dueDate        DateTime
   completedAt    DateTime?
   customerId     String?
@@ -241,12 +141,16 @@ model Task {
   assignedUserId String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  contactId      String
+  contact        contact[]
+  note           Note[]
+  assignedUser   User         @relation(fields: [assignedUserId], references: [id])
   customer       Customer?    @relation(fields: [customerId], references: [id])
   deal           Deal?        @relation(fields: [dealId], references: [id])
-  assignedUser   User         @relation(fields: [assignedUserId], references: [id])
-  contact        Contact[]
-  note           Note[]
 
+  @@index([assignedUserId], map: "tasks_assignedUserId_fkey")
+  @@index([customerId], map: "tasks_customerId_fkey")
+  @@index([dealId], map: "tasks_dealId_fkey")
   @@map("tasks")
 }
 
@@ -258,21 +162,25 @@ model Note {
   customerId  String
   dealId      String?
   authorId    String
-  contact     Contact[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  taskId      String?
+  contact     contact[]
+  Interaction Interaction[]
+  author      User          @relation(fields: [authorId], references: [id])
   customer    Customer      @relation(fields: [customerId], references: [id])
   deal        Deal?         @relation(fields: [dealId], references: [id])
-  author      User          @relation(fields: [authorId], references: [id])
   Task        Task?         @relation(fields: [taskId], references: [id])
-  taskId      String?
-  Interaction Interaction[]
 
+  @@index([authorId], map: "notes_authorId_fkey")
+  @@index([customerId], map: "notes_customerId_fkey")
+  @@index([dealId], map: "notes_dealId_fkey")
+  @@index([taskId], map: "notes_taskId_fkey")
   @@map("notes")
 }
 
 model ActivityLog {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   action    String?
   entity    String?
   entityId  String?
@@ -280,10 +188,10 @@ model ActivityLog {
   userId    String
   ipAddress String?
   userAgent String?
-  user      User    @relation(fields: [userId], references: [id])
-
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
+  @@index([userId], map: "activity_logs_userId_fkey")
   @@map("activity_logs")
 }
 
@@ -307,15 +215,129 @@ model CustomerTag {
   tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
 
   @@unique([customerId, tagId])
+  @@index([tagId], map: "customer_tags_tagId_fkey")
   @@map("customer_tags")
 }
 
-enum r_Role {
-  ADMIN
-  SALES_MANAGER
-  SALES_REP
-  SUPPORT
-  MARKETING
+model approvalaction {
+  id                Int             @id @default(autoincrement())
+  approvalRequestId Int
+  userId            String
+  roleId            Int
+  levelId           Int
+  action            String
+  comment           String?
+  createdAt         DateTime        @default(now())
+  approvalrequest   approvalrequest @relation(fields: [approvalRequestId], references: [id], map: "ApprovalAction_approvalRequestId_fkey")
+  approvallevel     approvallevel   @relation(fields: [levelId], references: [id], map: "ApprovalAction_levelId_fkey")
+  role              role            @relation(fields: [roleId], references: [id], map: "ApprovalAction_roleId_fkey")
+  users             User            @relation(fields: [userId], references: [id], map: "ApprovalAction_userId_fkey")
+
+  @@index([approvalRequestId], map: "ApprovalAction_approvalRequestId_fkey")
+  @@index([levelId], map: "ApprovalAction_levelId_fkey")
+  @@index([roleId], map: "ApprovalAction_roleId_fkey")
+  @@index([userId], map: "ApprovalAction_userId_fkey")
+}
+
+model approvalconfiguration {
+  id              Int           @id @default(autoincrement())
+  entityId        Int
+  roleId          Int
+  businessUnitId  Int
+  approvalLevelId Int
+  operation       String
+  approvalOrder   Int
+  approvallevel   approvallevel @relation(fields: [approvalLevelId], references: [id], map: "ApprovalConfiguration_approvalLevelId_fkey")
+  entity          entity        @relation(fields: [entityId], references: [id], map: "ApprovalConfiguration_entityId_fkey")
+  role            role          @relation(fields: [roleId], references: [id], map: "ApprovalConfiguration_roleId_fkey")
+
+  @@index([approvalLevelId], map: "ApprovalConfiguration_approvalLevelId_fkey")
+  @@index([entityId], map: "ApprovalConfiguration_entityId_fkey")
+  @@index([roleId], map: "ApprovalConfiguration_roleId_fkey")
+}
+
+model approvallevel {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  description           String
+  approvalaction        approvalaction[]
+  approvalconfiguration approvalconfiguration[]
+}
+
+model approvalrequest {
+  id               Int              @id @default(autoincrement())
+  entityId         Int
+  entityPrimaryKey Int
+  operation        String
+  status           String
+  createdById      String
+  createdAt        DateTime         @default(now())
+  approvalaction   approvalaction[]
+  users            User             @relation(fields: [createdById], references: [id], map: "ApprovalRequest_createdById_fkey")
+  entity           entity           @relation(fields: [entityId], references: [id], map: "ApprovalRequest_entityId_fkey")
+
+  @@index([createdById], map: "ApprovalRequest_createdById_fkey")
+  @@index([entityId], map: "ApprovalRequest_entityId_fkey")
+}
+
+model contact {
+  id            String       @id
+  customerId    String
+  type          String
+  value         String
+  taskId        String
+  interactionId String?
+  noteId        String
+  customers     Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade, map: "Contact_customerId_fkey")
+  interactions  Interaction? @relation(fields: [interactionId], references: [id], map: "Contact_interactionId_fkey")
+  notes         Note         @relation(fields: [noteId], references: [id], map: "Contact_noteId_fkey")
+  tasks         Task         @relation(fields: [taskId], references: [id], map: "Contact_taskId_fkey")
+  deal          Deal[]
+
+  @@index([customerId], map: "Contact_customerId_fkey")
+  @@index([interactionId], map: "Contact_interactionId_fkey")
+  @@index([noteId], map: "Contact_noteId_fkey")
+  @@index([taskId], map: "Contact_taskId_fkey")
+}
+
+model entity {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  description           String?
+  approvalconfiguration approvalconfiguration[]
+  approvalrequest       approvalrequest[]
+}
+
+model permission {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique(map: "Permission_name_key")
+  description    String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  rolepermission rolepermission[]
+}
+
+model role {
+  id                    Int                     @id @default(autoincrement())
+  name                  String                  @unique(map: "Role_name_key")
+  description           String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  approvalaction        approvalaction[]
+  approvalconfiguration approvalconfiguration[]
+  rolepermission        rolepermission[]
+  users                 User[]
+}
+
+model rolepermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  permission   permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "RolePermission_permissionId_fkey")
+  role         role       @relation(fields: [roleId], references: [id], onDelete: Cascade, map: "RolePermission_roleId_fkey")
+
+  @@unique([roleId, permissionId], map: "RolePermission_roleId_permissionId_key")
+  @@index([permissionId], map: "RolePermission_permissionId_fkey")
 }
 
 enum CustomerStatus {
