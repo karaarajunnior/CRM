@@ -38,6 +38,7 @@ export interface RegisterInput {
 	lastName: string;
 	role: userRole;
 	department?: string;
+	roleId: number;
 }
 
 export interface LoginInput {

@@ -1,6 +1,9 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/types";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 /* authentucate */
 export const authenticate = (
@@ -30,7 +33,7 @@ export const authenticate = (
 	}
 };
 
-/* authorize */
+/* authorize based on roles */
 export const authorize = (roles: string[]) => {
 	return (req: AuthRequest, res: Response, next: NextFunction) => {
 		if (!roles.includes(req.userRole!)) {
@@ -39,3 +42,26 @@ export const authorize = (roles: string[]) => {
 		next();
 	};
 };
+
+/* based on permissions
+to be fixed in the schema
+export const getpermission = (permission: string) => {
+	return async (req: AuthRequest, res: Response, next: NextFunction) => {
+		const userId = req.userId;
+		const user = await prisma.user.findMany({
+			where: {},
+			include: {
+				role: {
+					permissions: {},
+				},
+			},
+		});
+		const haspermissions = user?.role?.permissions.some(
+			(p) => p.name === permission,
+		);
+		if (!haspermissions) {
+			res.status(403).json({ msg: "access denied" });
+		}
+		next();
+	};
+};*/

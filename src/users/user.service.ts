@@ -47,7 +47,7 @@ export class AuthService {
 		}
 
 		const token: string = jwt.sign(
-			{ userId: user.id, role: user.role },
+			{ userId: user.id, role: user.roleId },
 			process.env.ACCESS_TOKEN!,
 			{ expiresIn: "1h" },
 		);
@@ -71,7 +71,7 @@ export class AuthService {
 
 	/* Register service */
 	async registerUser(registerData: RegisterInput): Promise<Partial<User>> {
-		const { email, password, firstName, lastName, role, department } =
+		const { email, password, firstName, lastName, roleId, department } =
 			registerData;
 
 		if (
@@ -79,7 +79,7 @@ export class AuthService {
 			!password ||
 			!firstName ||
 			!lastName ||
-			!role ||
+			!roleId ||
 			!department
 		) {
 			throw new Error("Required fields missing");
@@ -97,7 +97,7 @@ export class AuthService {
 				password: hashedPassword,
 				firstName,
 				lastName,
-				role,
+				roleId,
 				department,
 			},
 			omit: {

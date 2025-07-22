@@ -14,6 +14,7 @@ import customerTagRoutes from "./customers/customerTag.routes";
 import TagRoutes from "./tag/tag.routes";
 import ActivityLogRoutes from "./utils/ActivityLog/activityLog.routes";
 import { logActivityMiddleware } from "./middlewares/LogActivityMiddleware";
+import ApprovalRoutes from "../src/approvals/approval.routes";
 //import { accessLogStream } from "./logstream";
 
 dotenv.config();
@@ -39,6 +40,7 @@ export class App {
 		this.app.use(express.urlencoded({ extended: true }));
 		this.app.use(morgan("combined"));
 		this.app.use(logActivityMiddleware);
+		this.app.use("/api/approval", ApprovalRoutes);
 		this.app.use("/api/user", userRoutes);
 		this.app.use("/api/customer", customerroutes);
 		this.app.use("/api/Auth/", protectedRoutes);

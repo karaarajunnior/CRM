@@ -12,24 +12,121 @@ model test_db {
 }
 
 model User {
-  id                String        @id @default(uuid())
-  email             String        @unique
-  password          String
-  firstName         String
-  lastName          String
-  role              Role          @default(SALES_REP)
+  id        String @id @default(uuid())
+  email     String @unique
+  password  String
+  firstName String
+  lastName  String
+
   department        String?
-  isActive          Boolean       @default(true)
+  isActive          Boolean           @default(true)
   lastLoginAt       String?
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   assignedCustomers Customer[]
   assignedDeals     Deal[]
   interactions      Interaction[]
   tasks             Task[]
   notes             Note[]
+  ActivityLog       ActivityLog[]
+  approvalActions   ApprovalAction[]
+  createdRequests   ApprovalRequest[] @relation("CreatedRequests")
+  Role              Role?             @relation(fields: [roleId], references: [id])
+  roleId            Int?
 
   @@map("users")
+}
+
+model Permission {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+}
+
+model Role {
+  id                     Int                     @id @default(autoincrement())
+  name                   String                  @unique
+  description            String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  users                  User[]
+  rolePermissions        RolePermission[]
+  approvalConfigurations ApprovalConfiguration[]
+  ApprovalAction         ApprovalAction[]
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionId Int
+
+  @@unique([roleId, permissionId])
+}
+
+model Entity {
+  id               Int                     @id @default(autoincrement())
+  name             String
+  description      String?
+  configurations   ApprovalConfiguration[]
+  approvalRequests ApprovalRequest[]
+}
+
+model ApprovalLevel {
+  id             Int                     @id @default(autoincrement())
+  name           String
+  description    String
+  configurations ApprovalConfiguration[]
+  actions        ApprovalAction[]
+}
+
+model ApprovalConfiguration {
+  id              Int    @id @default(autoincrement())
+  entityId        Int
+  roleId          Int
+  businessUnitId  Int
+  approvalLevelId Int
+  operation       String // CREATE, UPDATE, DELETE
+  approvalOrder   Int
+
+  entity        Entity        @relation(fields: [entityId], references: [id])
+  role          Role          @relation(fields: [roleId], references: [id])
+  approvalLevel ApprovalLevel @relation(fields: [approvalLevelId], references: [id])
+}
+
+model ApprovalRequest {
+  id               Int      @id @default(autoincrement())
+  entityId         Int
+  entityPrimaryKey Int // ID of actual entity record
+  operation        String
+  status           String // PENDING, APPROVED, REJECTED, RETURNED
+  createdById      String
+  createdAt        DateTime @default(now())
+
+  entity    Entity           @relation(fields: [entityId], references: [id])
+  createdBy User             @relation("CreatedRequests", fields: [createdById], references: [id])
+  actions   ApprovalAction[]
+}
+
+model ApprovalAction {
+  id                Int      @id @default(autoincrement())
+  approvalRequestId Int
+  userId            String
+  roleId            Int
+  levelId           Int
+  action            String // APPROVED, REJECTED, RETURNED
+  comment           String?
+  createdAt         DateTime @default(now())
+
+  approvalRequest ApprovalRequest @relation(fields: [approvalRequestId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+  role            Role            @relation(fields: [roleId], references: [id])
+  level           ApprovalLevel   @relation(fields: [levelId], references: [id])
 }
 
 model Contact {
@@ -175,14 +272,16 @@ model Note {
 }
 
 model ActivityLog {
-  id        String   @id @default(uuid())
+  id        String  @id @default(uuid())
   action    String?
   entity    String?
   entityId  String?
   changes   Json?
-  userId    String?
+  userId    String
   ipAddress String?
   userAgent String?
+  user      User    @relation(fields: [userId], references: [id])
+
   createdAt DateTime @default(now())
 
   @@map("activity_logs")
@@ -211,8 +310,7 @@ model CustomerTag {
   @@map("customer_tags")
 }
 
-// Enums
-enum Role {
+enum r_Role {
   ADMIN
   SALES_MANAGER
   SALES_REP
