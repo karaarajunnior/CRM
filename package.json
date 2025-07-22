@@ -12,7 +12,8 @@
 		"test": "npm start",
 		"start:build": "tsc -p .",
 		"start:dev": "nodemon --exec ts-node src/index.ts",
-		"start:prod": "tsc -p . && NODE_ENV=prod node dist/index.js"
+		"start:prod": "tsc -p . && NODE_ENV=prod node dist/index.js",
+		"build": "node --max-old-space-size=4096 node_modules/.bin/prisma generate && your-build-command"
 	},
 	"dependencies": {
 		"bcrypt": "^6.0.0",
