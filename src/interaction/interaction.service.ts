@@ -18,7 +18,7 @@ export class InteractionService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -90,7 +90,7 @@ export class InteractionService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
@@ -131,7 +131,7 @@ export class InteractionService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -169,7 +169,7 @@ export class InteractionService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -216,7 +216,7 @@ export class InteractionService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -302,7 +302,7 @@ export class InteractionService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},

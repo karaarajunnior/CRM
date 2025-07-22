@@ -222,14 +222,14 @@ export class CustomerService {
 	static async addContactMethod(customerId: string, contactData) {
 		const customer = await prisma.customer.findUnique({
 			where: { id: customerId },
-			select: { contacts: true },
+			select: { contact: true },
 		});
 
 		if (!customer) {
 			throw createError("Customer not found", 404);
 		}
 
-		const contacts = (customer.contacts as unknown as ContactInfo[]) || [];
+		const contacts = (customer.contact as unknown as ContactInfo[]) || [];
 
 		if (contactData.isPrimary) {
 			contacts.forEach((contact) => {

@@ -8,7 +8,7 @@ export class ContactService {
 				...contactData,
 			},
 			include: {
-				customer: {
+				customers: {
 					select: {
 						id: true,
 						firstName: true,
@@ -16,7 +16,7 @@ export class ContactService {
 						phone: true,
 					},
 				},
-				task: {
+				tasks: {
 					select: {
 						id: true,
 						title: true,
@@ -24,7 +24,7 @@ export class ContactService {
 						priority: true,
 					},
 				},
-				note: {
+				notes: {
 					select: {
 						id: true,
 						title: true,
@@ -32,7 +32,7 @@ export class ContactService {
 						createdAt: true,
 					},
 				},
-				Interaction: {
+				interactions: {
 					select: {
 						id: true,
 						type: true,
@@ -61,7 +61,7 @@ export class ContactService {
 				skip,
 				take: limit,
 				include: {
-					customer: {
+					customers: {
 						select: {
 							id: true,
 							firstName: true,
@@ -69,7 +69,7 @@ export class ContactService {
 							phone: true,
 						},
 					},
-					task: {
+					tasks: {
 						select: {
 							id: true,
 							title: true,
@@ -77,7 +77,7 @@ export class ContactService {
 							priority: true,
 						},
 					},
-					note: {
+					notes: {
 						select: {
 							id: true,
 							title: true,
@@ -85,7 +85,7 @@ export class ContactService {
 							createdAt: true,
 						},
 					},
-					Interaction: {
+					interactions: {
 						select: {
 							id: true,
 							type: true,
@@ -124,7 +124,7 @@ export class ContactService {
 		const contact = await prisma.contact.findUnique({
 			where: { id },
 			include: {
-				customer: {
+				customers: {
 					select: {
 						id: true,
 						firstName: true,
@@ -132,7 +132,7 @@ export class ContactService {
 						phone: true,
 					},
 				},
-				task: {
+				tasks: {
 					select: {
 						id: true,
 						title: true,
@@ -140,7 +140,7 @@ export class ContactService {
 						priority: true,
 					},
 				},
-				note: {
+				notes: {
 					select: {
 						id: true,
 						title: true,
@@ -148,7 +148,7 @@ export class ContactService {
 						createdAt: true,
 					},
 				},
-				Interaction: {
+				interactions: {
 					select: {
 						id: true,
 						type: true,
@@ -179,7 +179,7 @@ export class ContactService {
 			where: { id },
 			data: updateData,
 			include: {
-				customer: {
+				customers: {
 					select: {
 						id: true,
 						firstName: true,
@@ -187,7 +187,7 @@ export class ContactService {
 						phone: true,
 					},
 				},
-				task: {
+				tasks: {
 					select: {
 						id: true,
 						title: true,
@@ -195,7 +195,7 @@ export class ContactService {
 						priority: true,
 					},
 				},
-				note: {
+				notes: {
 					select: {
 						id: true,
 						title: true,
@@ -203,7 +203,7 @@ export class ContactService {
 						createdAt: true,
 					},
 				},
-				Interaction: {
+				interactions: {
 					select: {
 						id: true,
 						type: true,
@@ -235,7 +235,7 @@ export class ContactService {
 		const contacts = await prisma.contact.findMany({
 			where: { customerId },
 			include: {
-				customer: {
+				customers: {
 					select: {
 						id: true,
 						firstName: true,
@@ -243,7 +243,7 @@ export class ContactService {
 						phone: true,
 					},
 				},
-				task: {
+				tasks: {
 					select: {
 						id: true,
 						title: true,
@@ -251,7 +251,7 @@ export class ContactService {
 						priority: true,
 					},
 				},
-				note: {
+				notes: {
 					select: {
 						id: true,
 						title: true,
@@ -259,7 +259,7 @@ export class ContactService {
 						createdAt: true,
 					},
 				},
-				Interaction: {
+				interactions: {
 					select: {
 						id: true,
 						type: true,
@@ -284,7 +284,7 @@ export class ContactService {
 		const contacts = await prisma.contact.findMany({
 			where: { type },
 			include: {
-				customer: {
+				customers: {
 					select: {
 						id: true,
 						firstName: true,
@@ -292,7 +292,7 @@ export class ContactService {
 						phone: true,
 					},
 				},
-				task: {
+				tasks: {
 					select: {
 						id: true,
 						title: true,
@@ -300,7 +300,7 @@ export class ContactService {
 						priority: true,
 					},
 				},
-				note: {
+				notes: {
 					select: {
 						id: true,
 						title: true,
@@ -308,7 +308,7 @@ export class ContactService {
 						createdAt: true,
 					},
 				},
-				Interaction: {
+				interactions: {
 					select: {
 						id: true,
 						type: true,
@@ -335,14 +335,14 @@ export class ContactService {
 				OR: [
 					{ type: { contains: searchTerm } },
 					{ value: { contains: searchTerm } },
-					{ customer: { firstName: { contains: searchTerm } } },
+					{ customers: { firstName: { contains: searchTerm } } },
 					{
-						customer: { email: { contains: searchTerm } },
+						customers: { email: { contains: searchTerm } },
 					},
 				],
 			},
 			include: {
-				customer: {
+				customers: {
 					select: {
 						id: true,
 						firstName: true,
@@ -350,7 +350,7 @@ export class ContactService {
 						phone: true,
 					},
 				},
-				task: {
+				tasks: {
 					select: {
 						id: true,
 						title: true,
@@ -358,7 +358,7 @@ export class ContactService {
 						priority: true,
 					},
 				},
-				note: {
+				notes: {
 					select: {
 						id: true,
 						title: true,
@@ -366,7 +366,7 @@ export class ContactService {
 						createdAt: true,
 					},
 				},
-				Interaction: {
+				interactions: {
 					select: {
 						id: true,
 						type: true,

@@ -15,7 +15,7 @@ export class NoteService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -78,7 +78,7 @@ export class NoteService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
@@ -124,7 +124,7 @@ export class NoteService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -165,7 +165,7 @@ export class NoteService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -227,7 +227,7 @@ export class NoteService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},

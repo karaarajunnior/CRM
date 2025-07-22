@@ -12,7 +12,7 @@ export class DealService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -82,7 +82,7 @@ export class DealService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
@@ -131,7 +131,7 @@ export class DealService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -181,7 +181,7 @@ export class DealService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -284,7 +284,7 @@ export class DealService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},

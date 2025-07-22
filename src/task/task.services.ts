@@ -14,7 +14,7 @@ export class TaskService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -106,7 +106,7 @@ export class TaskService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
@@ -147,7 +147,7 @@ export class TaskService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -185,7 +185,7 @@ export class TaskService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -233,7 +233,7 @@ export class TaskService {
 				contact: {
 					select: {
 						id: true,
-						customer: true,
+						customers: true,
 						type: true,
 					},
 				},
@@ -319,7 +319,7 @@ export class TaskService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
@@ -363,7 +363,7 @@ export class TaskService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
@@ -416,7 +416,7 @@ export class TaskService {
 					contact: {
 						select: {
 							id: true,
-							customer: true,
+							customers: true,
 							type: true,
 						},
 					},
