@@ -8,6 +8,7 @@
 	"type": "commonjs",
 	"scripts": {
 		"start": "ts-node src/index.ts",
+		"postinstall": "prisma generate && prisma migrate deploy",
 		"test": "npm start",
 		"start:build": "tsc -p .",
 		"start:dev": "nodemon --exec ts-node src/index.ts",
