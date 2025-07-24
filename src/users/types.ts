@@ -36,7 +36,6 @@ export interface RegisterInput {
 	password: any;
 	firstName: string;
 	lastName: string;
-	role: userRole;
 	department?: string;
 	roleId: number;
 }

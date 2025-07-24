@@ -74,14 +74,7 @@ export class AuthService {
 		const { email, password, firstName, lastName, roleId, department } =
 			registerData;
 
-		if (
-			!email ||
-			!password ||
-			!firstName ||
-			!lastName ||
-			!roleId ||
-			!department
-		) {
+		if (!email || !password || !firstName || !lastName || !roleId) {
 			throw new Error("Required fields missing");
 		}
 
@@ -90,7 +83,7 @@ export class AuthService {
 			throw new Error("User already exists");
 		}
 
-		const hashedPassword = await bcrypt.hash(password, 10);
+		const hashedPassword = await bcrypt.hash(password, 2);
 		const user = await prisma.user.create({
 			data: {
 				email,
@@ -100,12 +93,14 @@ export class AuthService {
 				roleId,
 				department,
 			},
-			omit: {
-				password: true,
+			include: {
+				Role: true,
 			},
 		});
 
-		return user;
+		const { password: _, ...userDataMinusPassword } = user;
+
+		return userDataMinusPassword;
 	}
 
 	/* Remove user service */

@@ -8,13 +8,7 @@ export const registerSchema = Joi.object<RegisterInput>({
 	password: Joi.string().min(6).required(),
 	firstName: Joi.string().required(),
 	lastName: Joi.string().required(),
-	role: Joi.string().valid(
-		"ADMIN",
-		"SALES_MANAGER",
-		"SALES_REP",
-		"SUPPORT",
-		"MARKETING",
-	),
+	roleId: Joi.number(),
 	department: Joi.string().optional(),
 });
 
@@ -453,9 +447,7 @@ export const registerValidation = [
 	body("password").isLength({ min: 6 }),
 	body("firstName").trim().isLength({ min: 1, max: 50 }),
 	body("lastName").trim().isLength({ min: 1, max: 50 }),
-	body("role")
-		.optional()
-		.isIn(["ADMIN", "SALES_MANAGER", "SALES_REP", "SUPPORT", "MARKETING"]),
+
 	body("department").optional().trim().isLength({ max: 100 }),
 ];
 

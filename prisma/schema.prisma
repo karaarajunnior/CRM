@@ -7,10 +7,6 @@ datasource db {
   url      = env("DB_URL")
 }
 
-model test_db {
-  id Int @unique @default(autoincrement())
-}
-
 model User {
   id                String            @id @default(uuid())
   email             String            @unique
@@ -22,7 +18,7 @@ model User {
   lastLoginAt       String?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
-  roleId            Int?
+  roleId            Int
   ActivityLog       ActivityLog[]
   approvalaction    approvalaction[]
   approvalrequest   approvalrequest[]
@@ -69,7 +65,7 @@ model Customer {
 }
 
 model Deal {
-  id                String          @id @default(uuid())
+  id                String          @id @unique @default(uuid())
   title             String
   description       String?
   value             Decimal
@@ -99,7 +95,7 @@ model Deal {
 }
 
 model Interaction {
-  id          String               @id @default(uuid())
+  id          String               @id @unique @default(uuid())
   type        InteractionType
   subject     String
   content     String?
@@ -128,7 +124,7 @@ model Interaction {
 }
 
 model Task {
-  id             String       @id @default(uuid())
+  id             String       @id @unique @default(uuid())
   title          String
   description    String?
   type           TaskType     @default(FOLLOW_UP)
@@ -155,7 +151,7 @@ model Task {
 }
 
 model Note {
-  id          String        @id @default(uuid())
+  id          String        @id @unique @default(uuid())
   title       String?
   content     String
   isPrivate   Boolean       @default(false)
@@ -180,7 +176,7 @@ model Note {
 }
 
 model ActivityLog {
-  id        String   @id @default(uuid())
+  id        String   @id @unique @default(uuid())
   action    String?
   entity    String?
   entityId  String?
@@ -207,7 +203,7 @@ model Tag {
 }
 
 model CustomerTag {
-  id         String   @id @default(uuid())
+  id         String   @id @unique @default(uuid())
   customerId String
   tagId      String
   createdAt  DateTime @default(now())
@@ -220,7 +216,7 @@ model CustomerTag {
 }
 
 model approvalaction {
-  id                Int             @id @default(autoincrement())
+  id                Int             @id @unique @default(autoincrement())
   approvalRequestId Int
   userId            String
   roleId            Int
@@ -240,7 +236,7 @@ model approvalaction {
 }
 
 model approvalconfiguration {
-  id              Int           @id @default(autoincrement())
+  id              Int           @id @unique @default(autoincrement())
   entityId        Int
   roleId          Int
   businessUnitId  Int
@@ -257,7 +253,7 @@ model approvalconfiguration {
 }
 
 model approvallevel {
-  id                    Int                     @id @default(autoincrement())
+  id                    Int                     @id @unique @default(autoincrement())
   name                  String
   description           String
   approvalaction        approvalaction[]
@@ -265,7 +261,7 @@ model approvallevel {
 }
 
 model approvalrequest {
-  id               Int              @id @default(autoincrement())
+  id               Int              @id @unique @default(autoincrement())
   entityId         Int
   entityPrimaryKey Int
   operation        String
@@ -281,7 +277,7 @@ model approvalrequest {
 }
 
 model contact {
-  id            String       @id
+  id            String       @id @unique @default(uuid())
   customerId    String
   type          String
   value         String
@@ -301,7 +297,7 @@ model contact {
 }
 
 model entity {
-  id                    Int                     @id @default(autoincrement())
+  id                    Int                     @id @unique @default(autoincrement())
   name                  String
   description           String?
   approvalconfiguration approvalconfiguration[]
@@ -330,7 +326,7 @@ model role {
 }
 
 model rolepermission {
-  id           Int        @id @default(autoincrement())
+  id           Int        @id @unique @default(autoincrement())
   roleId       Int
   permissionId Int
   permission   permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "RolePermission_permissionId_fkey")

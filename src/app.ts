@@ -39,7 +39,7 @@ export class App {
 		this.app.use(express.json());
 		this.app.use(express.urlencoded({ extended: true }));
 		this.app.use(morgan("combined"));
-		this.app.use(logActivityMiddleware);
+		//this.app.use(logActivityMiddleware);
 		this.app.use("/api/approval", ApprovalRoutes);
 		this.app.use("/api/user", userRoutes);
 		this.app.use("/api/customer", customerroutes);

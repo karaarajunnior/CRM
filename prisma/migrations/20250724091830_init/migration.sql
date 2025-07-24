@@ -1,11 +1,4 @@
 -- CreateTable
-CREATE TABLE `test_db` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-
-    UNIQUE INDEX `test_db_id_key`(`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `users` (
     `id` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
@@ -17,7 +10,7 @@ CREATE TABLE `users` (
     `lastLoginAt` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
-    `roleId` INTEGER NULL,
+    `roleId` INTEGER NOT NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
     INDEX `users_roleId_fkey`(`roleId`),
@@ -69,6 +62,7 @@ CREATE TABLE `deals` (
     `contactId` VARCHAR(191) NOT NULL,
     `type` ENUM('EMAIL', 'CALL', 'MEETING', 'SMS', 'SOCIAL', 'WEBSITE') NOT NULL DEFAULT 'EMAIL',
 
+    UNIQUE INDEX `deals_id_key`(`id`),
     INDEX `deals_assignedUserId_fkey`(`assignedUserId`),
     INDEX `deals_contactId_fkey`(`contactId`),
     INDEX `deals_customerId_fkey`(`customerId`),
@@ -93,6 +87,7 @@ CREATE TABLE `interactions` (
     `contactId` VARCHAR(191) NOT NULL,
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `interactions_id_key`(`id`),
     INDEX `interactions_customerId_fkey`(`customerId`),
     INDEX `interactions_dealId_fkey`(`dealId`),
     INDEX `interactions_noteId_fkey`(`noteId`),
@@ -117,6 +112,7 @@ CREATE TABLE `tasks` (
     `updatedAt` DATETIME(3) NOT NULL,
     `contactId` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `tasks_id_key`(`id`),
     INDEX `tasks_assignedUserId_fkey`(`assignedUserId`),
     INDEX `tasks_customerId_fkey`(`customerId`),
     INDEX `tasks_dealId_fkey`(`dealId`),
@@ -136,6 +132,7 @@ CREATE TABLE `notes` (
     `updatedAt` DATETIME(3) NOT NULL,
     `taskId` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `notes_id_key`(`id`),
     INDEX `notes_authorId_fkey`(`authorId`),
     INDEX `notes_customerId_fkey`(`customerId`),
     INDEX `notes_dealId_fkey`(`dealId`),
@@ -155,6 +152,7 @@ CREATE TABLE `activity_logs` (
     `userAgent` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `activity_logs_id_key`(`id`),
     INDEX `activity_logs_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -178,6 +176,7 @@ CREATE TABLE `customer_tags` (
     `tagId` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `customer_tags_id_key`(`id`),
     INDEX `customer_tags_tagId_fkey`(`tagId`),
     UNIQUE INDEX `customer_tags_customerId_tagId_key`(`customerId`, `tagId`),
     PRIMARY KEY (`id`)
@@ -194,6 +193,7 @@ CREATE TABLE `approvalaction` (
     `comment` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `approvalaction_id_key`(`id`),
     INDEX `ApprovalAction_approvalRequestId_fkey`(`approvalRequestId`),
     INDEX `ApprovalAction_levelId_fkey`(`levelId`),
     INDEX `ApprovalAction_roleId_fkey`(`roleId`),
@@ -211,6 +211,7 @@ CREATE TABLE `approvalconfiguration` (
     `operation` VARCHAR(191) NOT NULL,
     `approvalOrder` INTEGER NOT NULL,
 
+    UNIQUE INDEX `approvalconfiguration_id_key`(`id`),
     INDEX `ApprovalConfiguration_approvalLevelId_fkey`(`approvalLevelId`),
     INDEX `ApprovalConfiguration_entityId_fkey`(`entityId`),
     INDEX `ApprovalConfiguration_roleId_fkey`(`roleId`),
@@ -223,6 +224,7 @@ CREATE TABLE `approvallevel` (
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `approvallevel_id_key`(`id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -236,6 +238,7 @@ CREATE TABLE `approvalrequest` (
     `createdById` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `approvalrequest_id_key`(`id`),
     INDEX `ApprovalRequest_createdById_fkey`(`createdById`),
     INDEX `ApprovalRequest_entityId_fkey`(`entityId`),
     PRIMARY KEY (`id`)
@@ -251,6 +254,7 @@ CREATE TABLE `contact` (
     `interactionId` VARCHAR(191) NULL,
     `noteId` VARCHAR(191) NOT NULL,
 
+    UNIQUE INDEX `contact_id_key`(`id`),
     INDEX `Contact_customerId_fkey`(`customerId`),
     INDEX `Contact_interactionId_fkey`(`interactionId`),
     INDEX `Contact_noteId_fkey`(`noteId`),
@@ -264,6 +268,7 @@ CREATE TABLE `entity` (
     `name` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `entity_id_key`(`id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -297,13 +302,14 @@ CREATE TABLE `rolepermission` (
     `roleId` INTEGER NOT NULL,
     `permissionId` INTEGER NOT NULL,
 
+    UNIQUE INDEX `rolepermission_id_key`(`id`),
     INDEX `RolePermission_permissionId_fkey`(`permissionId`),
     UNIQUE INDEX `RolePermission_roleId_permissionId_key`(`roleId`, `permissionId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `users` ADD CONSTRAINT `users_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `role`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `users` ADD CONSTRAINT `users_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `role`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `customers` ADD CONSTRAINT `customers_assignedUserId_fkey` FOREIGN KEY (`assignedUserId`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
