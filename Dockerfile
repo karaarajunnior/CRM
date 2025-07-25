@@ -41,7 +41,11 @@
 
 ARG NODE_VERSION=18
 
+
+
 FROM node:${NODE_VERSION}-alpine
+
+
 
 # Set NODE_ENV to development so devDependencies are installed
 ENV NODE_ENV=development
@@ -49,8 +53,24 @@ ENV NODE_ENV=development
 # Create app directory
 WORKDIR /usr/src/app
 
+# Declare a build argument for DB_URL
+ARG DB_URL
+ENV DB_URL=${DB_URL}
+
+
+
+
+
 # Copy package files and install all dependencies (including devDependencies)
 COPY package*.json ./
+
+#prisma
+COPY prisma ./prisma
+
+#copy the .env file
+COPY .env ./.env
+
+# RUN npm install
 RUN npm install
 
 # Copy the rest of the app
