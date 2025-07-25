@@ -15,12 +15,13 @@ import {
 } from "../validations/validations";
 import { authenticate } from "../middlewares/auth.middleware";
 import { basicLimiter } from "../middlewares/RateLimiter";
+import { logActivityMiddleware } from "../middlewares/LogActivityMiddleware";
 
 const router = express.Router();
 
 router.post("/register", basicLimiter, validate(registerValidation), register);
 router.post("/login", validate(loginValidation), login);
 router.get("/logout", authenticate, logout);
-router.get("/profile", getProfile);
+router.get("/profile", authenticate, logActivityMiddleware, getProfile);
 
 export default router;

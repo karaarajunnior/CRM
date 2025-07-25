@@ -62,5 +62,5 @@ USER node
 # Expose your app's port
 EXPOSE 5000
 
-# Start in dev mode with nodemon
+
 CMD ["npm", "run", "start:dev"]
