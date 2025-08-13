@@ -1,12 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
-import {
-	Resend,
-	CreateEmailOptions,
-	CreateEmailResponseSuccess,
-	ErrorResponse,
-} from "resend";
+import { sendEmail } from "../utils/resend";
 import dotenv from "dotenv";
 
 import {
@@ -15,12 +10,11 @@ import {
 	PasswordResetInput,
 	PasswordResetRequestInput,
 	RegisterInput,
-	SendEmailInput,
 } from "./types";
 import { logActivityMiddleware } from "../middlewares/LogActivityMiddleware";
 
 dotenv.config();
-const resend = new Resend(process.env.CRM_RESEND_KEY);
+
 const prisma = new PrismaClient();
 
 export class AuthService {
@@ -144,32 +138,6 @@ export class AuthService {
 		}
 	}
 
-	/* Email service */
-	async sendEmail(options: SendEmailInput | CreateEmailOptions): Promise<
-		| CreateEmailResponseSuccess
-		| ErrorResponse
-		| {
-				data: null;
-				error: unknown;
-		  }
-		| null
-	> {
-		try {
-			const { data, error } = await resend.emails.send(options);
-
-			if (error) {
-				console.error("Resend email sending error:", error);
-				return error;
-			}
-
-			console.log("Email sent successfully:", data);
-			return data;
-		} catch (err) {
-			console.error("Unexpected error during email sending:", err);
-			return { data: null, error: err };
-		}
-	}
-
 	/* Password reset request service */
 	async requestPasswordReset(email: string): Promise<void> {
 		const user = await prisma.user.findUnique({ where: { email } });
@@ -185,7 +153,7 @@ export class AuthService {
 
 		console.log(`Reset token (email): ${resetToken}`);
 
-		await this.sendEmail({
+		await sendEmail({
 			from: "Acme <onboarding@resend.dev>",
 			to: ["karaarajunior1@gmail.com", "karaarajunior057@gmail.com"],
 			subject: "Password Reset Request",
@@ -209,7 +177,7 @@ export class AuthService {
 				data: { password: hashed },
 			});
 
-			await this.sendEmail({
+			await sendEmail({
 				from: "Acme <onboarding@resend.dev>",
 				to: ["karaarajunior1@gmail.com", "karaarajunior057@gmail.com"],
 				subject: `Password Updated - ${lastName}`,

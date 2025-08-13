@@ -10,6 +10,7 @@ import {
 import { AuthRequest } from "../types/types";
 import { AuthService } from "./user.service";
 import { registerSchema } from "../validations/validations";
+import { errorResponse, successResponse } from "../utils/response";
 
 const authService = new AuthService();
 
@@ -61,14 +62,10 @@ export const register = async (
 	try {
 		const { error } = registerSchema.validate(req.body);
 		if (error) {
-			return res.status(400).json({ error: error.details[0].message });
+			return errorResponse(res, 400, error);
 		}
-
 		const user = await authService.registerUser(req.body);
-		res.status(201).json({
-			success: "User created, proceed to Login",
-			data: user,
-		});
+		return successResponse(res, "user registered, login", user);
 	} catch (error) {
 		const errorMessage =
 			error instanceof Error ? error.message : "Something went wrong";

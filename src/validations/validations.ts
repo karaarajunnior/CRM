@@ -1,5 +1,5 @@
 import { body, param, query } from "express-validator";
-import z from "zod";
+import { z } from "zod";
 import Joi from "joi";
 import { RegisterInput } from "../users/types";
 
@@ -28,6 +28,8 @@ export const dateRangeSchema = z
 			message: "Start date must be before or equal to end date",
 		},
 	);
+
+//export type one = z.infer<typeof dateRangeSchema>;
 
 // Analytics filter validation
 export const analyticsFilterSchema = z.object({
@@ -307,17 +309,6 @@ export const validateCustomerStatus = (status: string): boolean => {
 	return validStatuses.includes(status);
 };
 
-export const CreateDealDto = [];
-export const UpdateDealDto = [];
-
-export const createDealDto = [];
-
-export const CreateNoteDto = [];
-
-export const UpdateNoteDto = [];
-export const CreateInteractionDto = [];
-export const UpdateInteractionDto = [];
-
 export const taskIdParam = param("id").isUUID().withMessage("Invalid task ID");
 
 export const CreateTaskDto = [
@@ -551,6 +542,17 @@ export const paginationValidation = [
 	query("limit").optional().isInt({ min: 1, max: 100 }),
 	query("search").optional().trim().isLength({ max: 255 }),
 ];
+
+export const CreateDealDto = [];
+export const UpdateDealDto = [];
+
+export const createDealDto = [];
+
+export const CreateNoteDto = [];
+
+export const UpdateNoteDto = [];
+export const CreateInteractionDto = [];
+export const UpdateInteractionDto = [];
 
 // Export validation schemas
 export const validationSchemas = {

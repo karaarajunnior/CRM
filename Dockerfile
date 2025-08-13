@@ -68,7 +68,7 @@ COPY package*.json ./
 COPY prisma ./prisma
 
 #copy the .env file
-COPY .env ./.env
+# COPY .env ./.env
 
 # RUN npm install
 RUN npm install

@@ -336,6 +336,48 @@ model rolepermission {
   @@index([permissionId], map: "RolePermission_permissionId_fkey")
 }
 
+model Ticket {
+  title         String   @id @unique
+  description   String
+  status        String   @default("Todo")
+  priority      String
+  deadline      DateTime
+  helpfulNotes  String
+  relatedSkills String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  createdByEmail  String
+  assignedToEmail String
+
+  createdBy  use @relation("CreatedTickets", fields: [createdByEmail], references: [email])
+  assignedTo use @relation("AssignedTickets", fields: [assignedToEmail], references: [email])
+}
+
+model use {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  skills    String
+  role      Role     @default(admin)
+
+  createdTickets  Ticket[] @relation("CreatedTickets")
+  assignedTickets Ticket[] @relation("AssignedTickets")
+}
+
+enum Role {
+  admin
+  user
+  manager
+}
+
+enum rore {
+  admin
+  user
+  moderator
+}
+
 enum CustomerStatus {
   LEAD
   PROSPECT

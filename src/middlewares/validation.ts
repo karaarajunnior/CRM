@@ -31,3 +31,18 @@ export const validate = (validations: ValidationChain[]) => {
 		handleValidationErrors(req, res, next);
 	};
 };
+
+//using zod
+// export const validate = (validations: z.ZodType) => {
+// 	return async (
+// 		req: Request,
+// 		res: Response,
+// 		next: NextFunction,
+// 	): Promise<void> => {
+// 		const result = validations.safeParse(req.body);
+// 		if (!result.success) {
+// 			console.log(result.error);
+// 			return handleValidationErrors(req, res, next);
+// 		}
+// 	};
+// };

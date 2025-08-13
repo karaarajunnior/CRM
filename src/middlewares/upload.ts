@@ -42,7 +42,5 @@ const fileFilter = (
 export const upload = multer({
 	storage,
 	fileFilter,
-	// limits: {
-	// 	fileSize: parseInt(process.env.MAX_FILE_SIZE!) || 10 * 1024 * 1024,
-	// },
+	//l am to consider max file size limit
 });

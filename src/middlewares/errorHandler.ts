@@ -24,6 +24,7 @@ export const errorHandler = (
 			...(process.env.NODE_ENV === "development" && { stack: err.stack }),
 		},
 	});
+	next();
 };
 
 export const createError = (message: string, statusCode: number): AppError => {

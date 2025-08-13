@@ -7,6 +7,7 @@ import {
 	ContactUpdateInput,
 	PaginatedResult,
 } from "../types/types";
+import { createError, errorHandler } from "../middlewares/errorHandler";
 
 export class ContactController {
 	static async createContact(
@@ -68,11 +69,7 @@ export class ContactController {
 			});
 		} catch (error: any) {
 			console.error("Error fetching contacts:", error);
-			res.status(500).json({
-				success: false,
-				message: "Failed to fetch contacts",
-				error: error.message,
-			});
+			createError("failed to fetch contacts", 500);
 		}
 	}
 

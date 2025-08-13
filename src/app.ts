@@ -23,15 +23,19 @@ export class App {
 	private readonly app: Application;
 	private readonly APPLICATION_RUNNING = "application is running on";
 
-	constructor(private readonly port: string | number = process.env.PORT!) {
+	constructor(
+		private readonly port: number = parseInt(process.env.PORT!),
+		private readonly host = "0.0.0.0",
+	) {
 		this.app = express();
 		this.middleware();
 		this.routes();
 	}
 
 	listen() {
-		this.app.listen(this.port);
-		console.log(`${this.APPLICATION_RUNNING} port ${this.port}`);
+		this.app.listen(this.port, this.host, () => {
+			console.log(`${this.APPLICATION_RUNNING} port ${this.port}`);
+		});
 	}
 
 	private middleware() {
